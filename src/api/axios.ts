@@ -3,14 +3,12 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable no-var */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { loginOut, userAuthGet } from './../utils/security';
-import { getBaseUrl, getTimeOut } from "../config";
-import { assemblyGetParams, isNull } from "@/utils";
+import { loginOut, userAuthGet } from '../utils/security';
+import { getBaseUrl, getTimeOut } from "../utils/config";
+import { assemblyGetParams, isNull } from "../utils";
 import type { AxiosResponse } from "axios";
 import axios from "axios";
-import qs from "qs";
-import { ElMessage } from "element-plus";
-import { reidrect } from '@/router';
+import { reidrect } from '../router';
 
 /**
  * axios访问实例
@@ -116,7 +114,7 @@ const tipError = (
   }
 
   //在这里书写提示错误相关代码，如Modal.Error
-  ElMessage.error(msg);
+  // ElMessage.error(msg);
 };
 
 /**
@@ -159,6 +157,10 @@ export const apiRequest = async (params: IHttpRequestParams) => {
     }
 
     const { code, data, message } = reponse?.data || {};
+    if (!code) {
+      // ElMessage.error('服务出错了！！！')
+      return
+    }
     if (code !== 200) {
       //登录失效
       if (code === 582) {
@@ -184,87 +186,4 @@ export const apiRequest = async (params: IHttpRequestParams) => {
   }
 };
 
-/**
- * http下载文件 根据具体需求再修改
- * @param params
- */
-export const apiDownload = async (params: IHttpRequestParams) => {
-  initHttpRequestParams(params);
 
-  var headers = initHttpRequestHeader(params);
-
-  var url = params.url;
-
-  try {
-    var reponse: AxiosResponse<any>;
-    if (params.requestType === "post") {
-      reponse = await axiosInstance.post(
-        url,
-        params.dataType === "json" ? params.data : qs.stringify(params.data),
-        { headers, responseType: "blob" }
-      );
-    } else {
-      reponse = await axiosInstance.get(
-        `${url}${assemblyGetParams(params.data)}`,
-        { headers, responseType: "blob" }
-      );
-    }
-
-    const { status, data } = reponse || {};
-    if (status !== 200) {
-      if (status === 582) {
-        tipError(true, "登录失效,请重新登录");
-        loginOut();
-        setTimeout(() => {
-          reidrect("/login")
-        }, 200);
-        return Promise.reject("登录失效,请重新登录");
-      }
-      return Promise.reject("下载失败");
-    }
-
-    let fileUrl = window.URL.createObjectURL(data);
-    let link = document.createElement("a");
-    link.href = fileUrl;
-    link.download = decodeURIComponent(
-      reponse.headers["content-disposition"]?.split("filename=")[1]
-    );
-    link.click();
-
-    return Promise.resolve();
-  } catch (error) {
-    tipError(params.tipError!, error.message, params.onError);
-    return Promise.reject(error);
-  } finally {
-    params.finally?.();
-  }
-};
-
-//拿到文件流
-export const apiDownloadFile = async (params: IHttpRequestParams) => {
-  try {
-    const rsp = await axiosInstance.request({
-      url: params.url,
-      method: "get",
-      responseType: "blob",
-      params: params.data,
-      headers: {
-        authentication: userAuthGet().authentication,
-      },
-    });
-    if (rsp.status != 200) {
-      tipError(
-        params.tipError!,
-        `error http code ${rsp.status}`,
-        params.onError
-      );
-      return Promise.reject(`error http code ${rsp.status}`);
-    }
-    return Promise.resolve(rsp.data);
-  } catch (error) {
-    tipError(params.tipError!, error.message, params.onError);
-    return Promise.reject(error);
-  } finally {
-    params.finally?.();
-  }
-};

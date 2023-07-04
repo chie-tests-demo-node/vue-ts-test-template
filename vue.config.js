@@ -4,6 +4,11 @@ module.exports = defineConfig({
   transpileDependencies: true,
   productionSourceMap: false,
   lintOnSave: false,
+  configureWebpack: {
+    externals: {
+      'AMap': 'AMap' // 表示CDN引入的高德地图
+    }
+  },
   chainWebpack(config) {
     const oneOfsMap = config.module.rule('scss').oneOfs.store
     oneOfsMap.forEach((item) => {

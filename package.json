@@ -5,11 +5,10 @@
   "scripts": {
     "dev": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint",
-    "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@amap/amap-jsapi-loader": "^1.0.1",
     "@element-plus/icons-vue": "^2.0.10",
     "axios": "^1.3.5",
     "core-js": "^3.8.3",
@@ -22,13 +21,6 @@
     "vuex": "^4.0.0"
   },
   "devDependencies": {
-    "@storybook/addon-essentials": "7.0.0-beta.54",
-    "@storybook/addon-interactions": "7.0.0-beta.54",
-    "@storybook/addon-links": "7.0.0-beta.54",
-    "@storybook/blocks": "7.0.0-alpha.8",
-    "@storybook/testing-library": "0.0.14-next.1",
-    "@storybook/vue3": "7.0.0-beta.54",
-    "@storybook/vue3-webpack5": "7.0.0-beta.54",
     "@typescript-eslint/eslint-plugin": "^5.4.0",
     "@typescript-eslint/parser": "^5.4.0",
     "@vue/cli-plugin-babel": "~5.0.0",

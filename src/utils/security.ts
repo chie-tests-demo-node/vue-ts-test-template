@@ -4,7 +4,7 @@
 /* eslint-disable @typescript-eslint/no-empty-interface */
 //账号信息相关操作
 
-import { isNull } from "@/utils";
+import { isNull } from "./index";
 
 //用户信息
 export interface IUserInfo {
@@ -28,6 +28,10 @@ export interface IUserInfo {
    * 当前用户所有菜单信息
    */
   menuList: string;
+  /**
+   * 是否仅展示页面主体内容
+   */
+  onlyShowContent: boolean;
 }
 
 const userInfoKey = "_ui";
@@ -82,20 +86,20 @@ export interface Menu {
 
 /**
  * 获取当前登录用户的Menu信息
- * @returns 
+ * @returns
  */
-export const currentUserMenu = (): Menu[] => {
-  const { menuList } = userAuthGet() || {};
-  if (isNull(menuList)) {
-    return [];
-  }
-  var orginMenus: any[];
-  try {
-    orginMenus = JSON.parse(menuList);
-  } catch (error) {
-    return [];
-  }
-  return orginMenus.map((m) => { return { path: m.menuCode, name: m.menuName } });
-}
+// export const currentUserMenu = (): Menu[] => {
+//   const { menuList } = userAuthGet() || {};
+//   if (isNull(menuList)) {
+//     return [];
+//   }
+//   var orginMenus: any[];
+//   try {
+//     orginMenus = JSON.parse(menuList);
+//   } catch (error) {
+//     return [];
+//   }
+//   return orginMenus.map((m) => { return { path: m.menuCode, name: m.menuName } });
+// }
 
 

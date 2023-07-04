@@ -18,7 +18,7 @@ export const isNull = (e: any) => {
   if (e === null || e === undefined) {
     return true;
   }
-  //空字符串情况
+  //空字符串情况  
   if (e === '') {
     return true;
   }
@@ -300,7 +300,7 @@ export const getBase64ImgWH = (base64: any): Promise<{ width: number, height: nu
  * @returns 注意，这样转换出来的options value 是 string
  */
 export const toAntSelectOptions = (obj: any) => {
-  var list = [];
+  var list: any = [];
   for (const key in obj) {
     if (obj.hasOwnProperty(key)) {
       list.push({ label: obj[key], value: key });
@@ -488,7 +488,7 @@ export const assemblyGetParams = (data?: any) => {
  * @param phoneStr 
  * @returns 
  */
-export const encryptionPhone = (phoneStr?: string | any) => {
+export const encryptionPhone = (phoneStr: string) => {
   if (isNull(phoneStr)) {
     return phoneStr;
   }
@@ -533,7 +533,7 @@ export const getUrlParams = (url: string): any => {
   if (quersionIndex === -1) {
     return {};
   }
-  var rsp: any = {}
+  var rsp = {}
   var searchStr = url.substring(quersionIndex + 1);
   var params = searchStr.split('&');
   for (var i = 0; i < params.length; i++) {
@@ -560,4 +560,62 @@ export const encryptionStr = (data: string) => {
     rst = `${rst}${temp}`;
   }
   return rst;
+}
+
+/**
+ * 加密身份证号
+ */
+export const encryptionIdCard = (idCard: string) => {
+  if (isNull(idCard) || idCard.length < 8) { // 长度太短，无法加密
+    return idCard;
+  }
+  //获取身份证号中间需要替换为星号的部分起始位置和长度
+  var start = Math.floor((idCard.length - 8) / 2); // 起始位置
+  var len = 8; // 需要替换的部分长度
+  //构造替换后的字符串
+  var encryptedIdCard = idCard.substring(0, start) + '********' + idCard.substring(start + len);
+  return encryptedIdCard;
+}
+
+/**
+ * 加密地址
+ */
+export const encryptionAddress = (address: string) => {
+  if (isNull(address) || address.length == 1) {
+    return address;
+  }
+
+  // 获取地址中需要替换为星号的部分起始位置和长度
+  var start = 1;
+  var len = address.length / 2;
+
+  // 非空格字符替换为*
+  var asterisk = '';
+  for (var i = 0; i < len; i++) {
+    asterisk += '*';
+  }
+  var encryptedAddress = address.substring(0, start) + asterisk + address.substring(start + len);
+
+  return encryptedAddress;
+}
+
+/**
+ * 加密邮箱
+ */
+export const encryptionEmail = (email: string) => {
+  if (isNull(email)) {
+    return email;
+  }
+  var parts = email.split("@");
+  if (parts.length != 2) {
+    return email;
+  }
+  var username = parts[0];
+  var domain = parts[1];
+  if (username.length < 3) {
+    return email;
+  }
+  var encryptUsername = username.substring(0, 3) + "****" + username.substring(username.length - 2);
+  var encryptEmail = encryptUsername + "@" + domain;
+  return encryptEmail;
 }
