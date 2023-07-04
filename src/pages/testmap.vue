@@ -2,12 +2,12 @@
 
 <template>
   <div id="container"> </div>
-  <el-input v-model="searchWord"></el-input>
+  <!-- <el-input v-model="searchWord"></el-input>
   <el-button @click="searchArea">去搜搜</el-button>
   <div> 选择时候的地址++++{{ searchedAddress }} </div>
   <div> 选择时候的经纬++++{{ searchedArr }} </div>
   <div v-for="(item, index) in areaList" :key="'areaList' + index.toString()" @click="listClick(item)">{{ item.name }}
-  </div>
+  </div> -->
 </template>
 
 <script lang='ts'>
@@ -49,10 +49,23 @@ export default defineComponent({
         funMethods.initGdMap(mapAxios)
         myAMaP = mapAxios
       },
+      onComplete(AMap: any, data: any) {
+        console.log(data);
+
+        console.log('定位结果：' + data.position) //经纬度信息
+        // let lnglat = data.position
+        // let marker = new AMap.Marker({
+        //   //创建标记
+        //   position: new AMap.LngLat(lnglat[0], lnglat[1])
+        // })
+        // console.log(marker)
+      },
+      // 初始化地图
       initGdMap(AMap: any) {
         mapObj = new AMap.Map('container', {
           zoom: 15,
-          viewMode: '3D'
+          viewMode: '3D',
+          center: [116.397428, 39.90923],
         })
         // 先获取本地位置
         let geolocation = new AMap.Geolocation({
@@ -65,11 +78,31 @@ export default defineComponent({
           showMarker: true //是否显示定位点
         })
         console.log('本地位置', geolocation);
+        // var citysearch = new AMap.CitySearch();
+        // //自动获取用户IP，返回当前城市
+        // citysearch.getLocalCity((status, result) => {
+        //   debugger
+        //   console.log(status, result);
+
+        //   if (status === 'complete' && result.info === 'OK') {
+        //     if (result && result.city && result.bounds) {
+        //       var cityinfo = result.city;
+        //       var citybounds = result.bounds;
+        //       document.getElementById('info').innerHTML = '您当前所在城市：' + cityinfo;
+        //       //地图显示当前城市
+        //       console.log('当前城市', citybounds);
+
+        //       // map.setBounds(citybounds);
+        //     }
+        //   } else {
+        //     document.getElementById('info').innerHTML = result.info;
+        //   }
+        // });
         mapObj.addControl(geolocation)
         geolocation.getCurrentPosition((status: any, result: any) => {
           console.log(status);
 
-          if (status == 'error') {
+          if (status == 'complete') {
             funMethods.onComplete(AMap, result)
           } else {
             ElMessage({
@@ -124,17 +157,26 @@ export default defineComponent({
           pageSize: 30
         })
       },
-      onComplete(AMap: any, data: any) {
-        console.log(data);
 
-        console.log('定位结果：' + data.position) //经纬度信息
-        let lnglat = data.position
-        let marker = new AMap.Marker({
-          //创建标记
-          position: new AMap.LngLat(lnglat[0], lnglat[1])
-        })
-        console.log(marker)
-      },
+      //   showCityInfo() {
+      //     //实例化城市查询类
+      //     var citysearch = new AMap.CitySearch();
+      //     //自动获取用户IP，返回当前城市
+      //     citysearch.getLocalCity(function(status, result) {
+      //         if (status === 'complete' && result.info === 'OK') {
+      //             if (result && result.city && result.bounds) {
+      //                 var cityinfo = result.city;
+      //                 var citybounds = result.bounds;
+      //                 document.getElementById('info').innerHTML = '您当前所在城市：'+cityinfo;
+      //                 //地图显示当前城市
+      //                 map.setBounds(citybounds);
+      //             }
+      //         } else {
+      //             document.getElementById('info').innerHTML = result.info;
+      //         }
+      //     });
+      // },
+
       listClick(item: any) {
         let geocoder = new myAMaP.Geocoder({
           radius: 1000 //范围，默认：500

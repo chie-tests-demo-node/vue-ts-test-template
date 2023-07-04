@@ -9,18 +9,18 @@ module.exports = defineConfig({
       'AMap': 'AMap' // 表示CDN引入的高德地图
     }
   },
-  chainWebpack(config) {
-    const oneOfsMap = config.module.rule('scss').oneOfs.store
-    oneOfsMap.forEach((item) => {
-      item
-        .use('sass-resources-loader')
-        .loader('sass-resources-loader')
-        .options({
-          resources: './src/styles/common.scss' //相对路径
-        })
-        .end()
-    })
-  },
+  // chainWebpack(config) {
+  //   const oneOfsMap = config.module.rule('scss').oneOfs.store
+  //   oneOfsMap.forEach((item) => {
+  //     item
+  //       .use('sass-resources-loader')
+  //       .loader('sass-resources-loader')
+  //       .options({
+  //         resources: './src/styles/common.scss' //相对路径
+  //       })
+  //       .end()
+  //   })  
+  // },  
   configureWebpack: {
     performance: {
       hints: 'warning',
