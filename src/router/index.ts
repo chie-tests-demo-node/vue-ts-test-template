@@ -25,9 +25,10 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: '/home',
-    component: () => import('@/pages/home.vue'),
+    component: () => import('@/components/ViewLayout/index.vue'),
     children: [
-      { path: "/cert/certManage", name: "根证书管理", component: () => import("@/pages/testmap.vue"), },
+      { path: "/testmap", name: "测试地址", component: () => import("@/pages/Map/index.vue") },
+      { path: "/appMan", name: "应用管理", component: () => import("@/pages/ApplyMan/index.vue") },
     ],
   },
   {

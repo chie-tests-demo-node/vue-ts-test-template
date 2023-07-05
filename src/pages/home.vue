@@ -31,15 +31,15 @@
     </div>
   </div>
 </template>
- 
-<script>
 
-// import { orderSubmitSave } from '@/api/userApi/index.js'
-import GoMap from "@/components/GoMap";
-export default {
-  name: 'ApplyOrder',
-  data() {
-    return {
+<script lang='ts'>
+import { defineComponent, reactive, toRefs } from 'vue'
+import GoMap from "../components/GoMap/index.vue";
+export default defineComponent({
+  name: 'app',
+  components: { GoMap },
+  setup() {
+    const state = reactive({
       showSub: false,
       mapShow: false,
       subFlag: false,
@@ -51,78 +51,78 @@ export default {
         districtName: '',
         districtCode: ''
       },
-      locationObj: null
+      locationObj: null,
+      mapFnAll: null,
+    })
+    const funMethods = {
+      onClickLeft() {
+        console.log('1121')
+        this.$router.push('/login')
+      },
+      showChange(item) {
+        this.mapShow = item
+      },
+      getAreaInfo(item) {
+        state.mapShow = false
+        state.locationObj = JSON.parse(JSON.stringify(item))
+        state.subInfo.xlazdz = `经度：${state.locationObj.position[0]}，纬度：${this.locationObj.position[1]}`
+        state.subInfo.xxdz = state.locationObj.address
+        state.subInfo.provinceName = state.locationObj.regeocode.addressComponent.province
+        state.subInfo.cityName = state.locationObj.regeocode.addressComponent.city
+        state.subInfo.districtName = state.locationObj.regeocode.addressComponent.district
+        state.subInfo.districtCode = state.locationObj.regeocode.addressComponent.adcode
+        console.log('222', state.locationObj)
+      },
+      goMap() {
+        state.mapShow = true
+        state.mapFnAll.init()
+      },
+      getSubmitSave() {
+        const data = {
+          lineInstallAddrLongitudeLatitude: this.subInfo.xlazdz,
+          detailAddr: this.subInfo.xxdz,
+          provinceName: this.subInfo.provinceName,
+          cityName: this.subInfo.cityName,
+          districtName: this.subInfo.districtName,
+          districtCode: this.subInfo.districtCode
+        }
+        this.subFlag = true
+        console.log(data);
+        // orderSubmitSave(data).then(
+        //   (resp) => {
+        //     if (resp.code === 0) {
+        this.showSub = true
+        //       setTimeout(() => {
+        //         this.$router.push({
+        //           path: '/home'
+        //         })
+        //       }, 3000)
+        //     } else {
+        //       this.$toast.fail(resp.errorMessage)
+        //     }
+        //     this.subFlag = false
+        //   },
+        //   (error) => {
+        //     this.subFlag = false
+        //     this.$toast.fail(error)
+        //   }
+        // )
+      },
+      onSubmit() {
+        this.getSubmitSave()
+      },
     }
-  },
-  components: {
-    GoMap
-  },
-  mounted() {
-    if (this.mapShow) {
-      this.$refs.mapFnAll.init()
+    const requestMethods = {}
+    return {
+      ...toRefs(state),
+      ...funMethods,
+      ...requestMethods
     }
-  },
-  methods: {
-    showChange(item) {
-      this.mapShow = item
-    },
-    getAreaInfo(item) {
-      this.mapShow = false
-      this.locationObj = JSON.parse(JSON.stringify(item))
-      this.subInfo.xlazdz = `经度：${this.locationObj.position[0]}，纬度：${this.locationObj.position[1]}`
-      this.subInfo.xxdz = this.locationObj.address
-      this.subInfo.provinceName = this.locationObj.regeocode.addressComponent.province
-      this.subInfo.cityName = this.locationObj.regeocode.addressComponent.city
-      this.subInfo.districtName = this.locationObj.regeocode.addressComponent.district
-      this.subInfo.districtCode = this.locationObj.regeocode.addressComponent.adcode
-      console.log('222', this.locationObj)
-    },
-    goMap() {
-      this.mapShow = true
-      this.$refs.mapFnAll.init()
-    },
-    getSubmitSave() {
-      const data = {
-        lineInstallAddrLongitudeLatitude: this.subInfo.xlazdz,
-        detailAddr: this.subInfo.xxdz,
-        provinceName: this.subInfo.provinceName,
-        cityName: this.subInfo.cityName,
-        districtName: this.subInfo.districtName,
-        districtCode: this.subInfo.districtCode
-      }
-      this.subFlag = true
-      // orderSubmitSave(data).then(
-      //   (resp) => {
-      //     if (resp.code === 0) {
-      //       this.showSub = true
-      //       setTimeout(() => {
-      //         this.$router.push({
-      //           path: '/homePage'
-      //         })
-      //       }, 3000)
-      //     } else {
-      //       this.$toast.fail(resp.errorMessage)
-      //     }
-      //     this.subFlag = false
-      //   },
-      //   (error) => {
-      //     this.subFlag = false
-      //     this.$toast.fail(error)
-      //   }
-      // )
-    },
-    onSubmit() {
-      this.getSubmitSave()
-    },
-    onClickLeft() {
-      console.log('1121')
-      this.$router.push('/homePage')
-    }
-  },
-}
+  }
+})
+
 </script>
- 
-<style lang="scss" scoped>
+<style lang='scss' scoped>
 .wrapper {
   display: flex;
   align-items: center;
