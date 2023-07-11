@@ -50,11 +50,14 @@ const routes: Array<RouteRecordRaw> = [
 // 设置路由
 const router = createRouter({
   routes,
-  //路由模式：history
+  //路由模式：history   1.路径比较正规，没有#  2.兼容性不如hash,且需要服务端支持，否则一刷新页面就404了
   history: createWebHistory()
-  //路由模式：hash
+  //路由模式：hash  1.兼容性好，ie8都支持 2.路径在#后边，比较丑
   // history:createWebHashHistory()
 });
+
+// 全局路由守卫
+// router.beforeEach((to, form, next) => { })
 
 // 导出路由
 export default router;
