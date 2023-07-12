@@ -51,14 +51,13 @@ export default defineComponent({
       },
       onComplete(AMap: any, data: any) {
         console.log(data);
-
         console.log('定位结果：' + data.position) //经纬度信息
-        // let lnglat = data.position
-        // let marker = new AMap.Marker({
-        //   //创建标记
-        //   position: new AMap.LngLat(lnglat[0], lnglat[1])
-        // })
-        // console.log(marker)
+        let lnglat = data.position
+        let marker = new AMap.Marker({
+          //创建标记
+          position: new AMap.LngLat(lnglat[0], lnglat[1])
+        })
+        console.log(marker)
       },
       // 初始化地图
       initGdMap(AMap: any) {
@@ -80,8 +79,7 @@ export default defineComponent({
         console.log('本地位置', geolocation);
         mapObj.addControl(geolocation)
         geolocation.getCurrentPosition((status: any, result: any) => {
-          console.log(status);
-
+          console.log('定位信息的状态====>', status);
           if (status == 'complete') {
             funMethods.onComplete(AMap, result)
           } else {
@@ -157,71 +155,71 @@ export default defineComponent({
       //     });
       // },
 
-      listClick(item: any) {
-        let geocoder = new myAMaP.Geocoder({
-          radius: 1000 //范围，默认：500
-        })
-        geocoder.getAddress(item.location, function (status: any, result: any) {
-          if (status === 'complete' && result.regeocode) {
-            state.searchedAddress = result.regeocode.formattedAddress
-            state.searchedArr = item.location
-            state.areaList = []
-          }
-        })
-        mapObj.remove(markers.value)
-        let clickPointer = new myAMaP.Marker({
-          map: mapObj,
-          position: item.location
-        })
-        mapObj.setCenter(item.location)
-        mapObj.add(clickPointer)
-        markers.value.push(clickPointer)
-      },
-      searchArea() {
-        console.log(state.searchWord, markers.value);
-        mapObj.remove(markers.value)
-        placeSearch.search(state.searchWord, (status: any, result: any) => {
-          // 查询成功时，result即对应匹配的POI信息
-          if (result.poiList && result.poiList.pois.length > 0) {
-            state.areaList = result.poiList.pois
-            let pois = result.poiList.pois
-            for (let i = 0; i < pois.length; i++) {
-              let poi = pois[i]
-              let marker = []
-              marker[i] = new myAMaP.Marker({
-                position: poi.location, // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
-                title: poi.name
-              })
-              marker[i].on('click', (e: any) => {
-                state.areaList = []
-                let geocoder = new myAMaP.Geocoder({
-                  radius: 1000 //范围，默认：500
-                })
-                geocoder.getAddress([e.lnglat.lng, e.lnglat.lat], function (status: any, result: any) {
-                  if (status === 'complete' && result.regeocode) {
-                    state.searchedAddress = result.regeocode.formattedAddress
-                    state.searchedArr = [e.lnglat.lng, e.lnglat.lat]
-                  }
-                })
-                mapObj.remove(markers.value)
-                let clickPointer = new myAMaP.Marker({
-                  map: mapObj,
-                  position: [e.lnglat.lng, e.lnglat.lat]
-                })
-                mapObj.setCenter([e.lnglat.lng, e.lnglat.lat])
-                mapObj.add(clickPointer)
-                markers.value.push(clickPointer)
-              })
-              // 将创建的点标记添加到已有的地图实例：
-              mapObj.add(marker[i])
-              markers.value.push(marker[i])
-            }
-            // 自动适配到合适视野范围
-            // 无参数，默认包括所有覆盖物的情况
-            mapObj.setFitView()
-          }
-        })
-      }
+      // listClick(item: any) {
+      //   let geocoder = new myAMaP.Geocoder({
+      //     radius: 1000 //范围，默认：500
+      //   })
+      //   geocoder.getAddress(item.location, function (status: any, result: any) {
+      //     if (status === 'complete' && result.regeocode) {
+      //       state.searchedAddress = result.regeocode.formattedAddress
+      //       state.searchedArr = item.location
+      //       state.areaList = []
+      //     }
+      //   })
+      //   mapObj.remove(markers.value)
+      //   let clickPointer = new myAMaP.Marker({
+      //     map: mapObj,
+      //     position: item.location
+      //   })
+      //   mapObj.setCenter(item.location)
+      //   mapObj.add(clickPointer)
+      //   markers.value.push(clickPointer)
+      // },
+      // searchArea() {
+      //   console.log(state.searchWord, markers.value);
+      //   mapObj.remove(markers.value)
+      //   placeSearch.search(state.searchWord, (status: any, result: any) => {
+      //     // 查询成功时，result即对应匹配的POI信息
+      //     if (result.poiList && result.poiList.pois.length > 0) {
+      //       state.areaList = result.poiList.pois
+      //       let pois = result.poiList.pois
+      //       for (let i = 0; i < pois.length; i++) {
+      //         let poi = pois[i]
+      //         let marker = []
+      //         marker[i] = new myAMaP.Marker({
+      //           position: poi.location, // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
+      //           title: poi.name
+      //         })
+      //         marker[i].on('click', (e: any) => {
+      //           state.areaList = []
+      //           let geocoder = new myAMaP.Geocoder({
+      //             radius: 1000 //范围，默认：500
+      //           })
+      //           geocoder.getAddress([e.lnglat.lng, e.lnglat.lat], function (status: any, result: any) {
+      //             if (status === 'complete' && result.regeocode) {
+      //               state.searchedAddress = result.regeocode.formattedAddress
+      //               state.searchedArr = [e.lnglat.lng, e.lnglat.lat]
+      //             }
+      //           })
+      //           mapObj.remove(markers.value)
+      //           let clickPointer = new myAMaP.Marker({
+      //             map: mapObj,
+      //             position: [e.lnglat.lng, e.lnglat.lat]
+      //           })
+      //           mapObj.setCenter([e.lnglat.lng, e.lnglat.lat])
+      //           mapObj.add(clickPointer)
+      //           markers.value.push(clickPointer)
+      //         })
+      //         // 将创建的点标记添加到已有的地图实例：
+      //         mapObj.add(marker[i])
+      //         markers.value.push(marker[i])
+      //       }
+      //       // 自动适配到合适视野范围
+      //       // 无参数，默认包括所有覆盖物的情况
+      //       mapObj.setFitView()
+      //     }
+      //   })
+      // }
     }
     const requestMethods = {}
     onMounted(() => {

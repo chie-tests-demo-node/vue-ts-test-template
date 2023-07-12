@@ -17,7 +17,7 @@ export const reidrect = (href: string) => {
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    component: () => import('@/pages/home.vue')
+    component: () => import('@/pages/Login/index.vue')
   },
   {
     path: '/login',
