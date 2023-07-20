@@ -1,8 +1,5 @@
 <template>
-  <div>
-    发生的
-
-  </div>
+  <div>354435</div>
 </template>
 
 <script lang='ts'>

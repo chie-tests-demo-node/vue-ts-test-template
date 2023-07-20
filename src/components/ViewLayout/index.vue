@@ -74,9 +74,33 @@ export default defineComponent({
   }
 }
 
+.el-menu {
+  border-right: none;
+}
+
 .el-aside {
   background-color: #fff;
   border-right: 1px solid #f0f1f2;
   height: calc(100vh - 50px);
+  padding-top: 20px;
+  box-shadow: 0 2px 6px 0 rgba(230, 216, 255, 0.5);
+
+  .el-menu-item {
+    height: 40px;
+    margin-top: 4px;
+  }
+
+  .el-menu-item.is-active,
+  .el-menu-item.is-active:hover {
+    color: #1677ff;
+    background-color: #e6f4ff;
+    border-radius: 12px;
+  }
+
+  .el-menu-item:hover {
+    background-color: #f0f0f0;
+    color: #1d1d1d;
+    border-radius: 12px;
+  }
 }
 </style>
