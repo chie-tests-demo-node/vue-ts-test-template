@@ -30,8 +30,8 @@ export default defineComponent({
     const router = useRouter();
     const state = reactive({
       getMenus: [
-        { path: '/testmap', name: '测试地址' },
-        { path: '/appMan', name: '应用管理' },
+        { path: '/testmap', name: '高德地图' },
+        { path: '/appMan', name: '文件上传' },
       ]
     })
     const funMethods = {
@@ -83,7 +83,7 @@ export default defineComponent({
   border-right: 1px solid #f0f1f2;
   height: calc(100vh - 50px);
   padding-top: 20px;
-  box-shadow: 0 2px 6px 0 rgba(230, 216, 255, 0.5);
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .1);
 
   .el-menu-item {
     height: 40px;
