@@ -1,5 +1,5 @@
 <template>
-  <div>354435</div>
+  <div class="bigScreenCls">11</div>
 </template>
 
 <script lang='ts'>
@@ -20,4 +20,12 @@ export default defineComponent({
 })
 
 </script>
-<style lang='scss' scoped></style>
+<style lang='scss' scoped>
+.bigScreenCls {
+  height: 100vh;
+  width: 100%;
+  min-width: 1800px;
+  background-image: url('@/assets/pageBg.png');
+  background-size: 100% 100%;
+}
+</style>

@@ -31,9 +31,13 @@ const routes: Array<RouteRecordRaw> = [
       { path: "/appMan", name: "应用管理", component: () => import("@/pages/ApplyMan/index.vue") },
     ],
   },
+  // {
+  //   path: '/testmap',
+  //   component: () => import('@/pages/testmap.vue')
+  // },
   {
-    path: '/testmap',
-    component: () => import('@/pages/testmap.vue')
+    path: '/bigScreen',
+    component: () => import('@/pages/BigScreen/index.vue')
   },
   {
     // 定义404路由

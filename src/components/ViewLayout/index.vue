@@ -31,7 +31,7 @@ export default defineComponent({
     const state = reactive({
       getMenus: [
         { path: '/testmap', name: '高德地图' },
-        { path: '/appMan', name: '文件上传' },
+        { path: '/appMan', name: '应用管理' },
       ]
     })
     const funMethods = {
@@ -102,5 +102,12 @@ export default defineComponent({
     color: #1d1d1d;
     border-radius: 12px;
   }
+
+}
+
+.el-main {
+  // min-width: 1800px;
+  // overflow-x: auto;
+  // overflow-y: hidden;
 }
 </style>
