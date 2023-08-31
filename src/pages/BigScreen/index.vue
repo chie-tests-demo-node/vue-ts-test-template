@@ -1,5 +1,5 @@
 <template>
-  <div class="bigScreenCls">11</div>
+  <div class="bigScreenCls">1435341</div>
 </template>
 
 <script lang='ts'>
