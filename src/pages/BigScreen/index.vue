@@ -5,6 +5,8 @@
         <dv-loading>数据加载中...</dv-loading>
       </dv-border-box-1>
       <dv-flyline-chart :config="config" :dev="true" class="left-bottom" />
+      <dv-scroll-board :config="config1" style="width:500px;height:220px" />
+      <dv-scroll-ranking-board :config="config2" style="width:500px;height:300px" />
     </dv-full-screen-container>
   </div>
 </template>
@@ -94,6 +96,56 @@ export default defineComponent({
         pointsImg: {
           url: '/img/flylineChart/mapPoint.png'
         }
+      },
+      config1: {
+        header: ['列1', '列2', '列3'],
+        data: [
+          ['行1列1', '行1列2', '行1列3'],
+          ['行2列1', '行2列2', '行2列3'],
+          ['行3列1', '行3列2', '行3列3'],
+          ['行4列1', '行4列2', '行4列3'],
+          ['行5列1', '行5列2', '行5列3'],
+          ['行6列1', '行6列2', '行6列3'],
+          ['行7列1', '行7列2', '行7列3'],
+          ['行8列1', '行8列2', '行8列3'],
+          ['行9列1', '行9列2', '行9列3'],
+          ['行10列1', '行10列2', '行10列3']
+        ],
+        index: true,
+        columnWidth: [50],
+        align: ['center']
+      },
+      config2: {
+        data: [
+          {
+            name: '周口',
+            value: 55
+          },
+          {
+            name: '南阳',
+            value: 120
+          },
+          {
+            name: '西峡',
+            value: 78
+          },
+          {
+            name: '驻马店',
+            value: 66
+          },
+          {
+            name: '新乡',
+            value: 80
+          },
+          {
+            name: '信阳',
+            value: 45
+          },
+          {
+            name: '漯河',
+            value: 29
+          }
+        ]
       }
     })
     const funMethods = {}
@@ -119,6 +171,8 @@ export default defineComponent({
   background-size: 100% 100%;
 
   .big-screen {
+    display: flex;
+    flex-wrap: wrap;
     height: 100vh !important;
     width: 100% !important;
     margin: 0;
