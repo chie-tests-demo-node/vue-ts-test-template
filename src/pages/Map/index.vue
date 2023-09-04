@@ -2,8 +2,8 @@
 
 <template>
   <div id="container"> </div>
-  <!-- <el-input v-model="searchWord"></el-input>
-  <el-button @click="searchArea">去搜搜</el-button>
+  <el-input v-model="searchWord"></el-input>
+  <!-- <el-button @click="searchArea">去搜搜</el-button>
   <div> 选择时候的地址++++{{ searchedAddress }} </div>
   <div> 选择时候的经纬++++{{ searchedArr }} </div>
   <div v-for="(item, index) in areaList" :key="'areaList' + index.toString()" @click="listClick(item)">{{ item.name }}
@@ -17,13 +17,6 @@ import { ElMessage } from 'element-plus'
 export default defineComponent({
   name: 'app',
   setup() {
-    const state = reactive({
-      searchWord: '',
-      areaList: <any[]>([]),
-      localCity: '',
-      searchedAddress: '',
-      searchedArr: <any>([]),
-    })
     let mapObj = ref<any>(null)
     // 创建一个类收纳Amap
     let myAMaP: any
@@ -32,10 +25,18 @@ export default defineComponent({
     // 创建一个用于搜索
     let placeSearch: any
 
+    const state = reactive({
+      searchWord: '',
+      areaList: <any[]>([]),
+      localCity: '',
+      searchedAddress: '',
+      searchedArr: <any>([]),
+    })
+
     const funMethods = {
       async testAmp() {
         const mapAxios = await AMapLoader.load({
-          key: 'b87ba9590d7fa88e6d7fd6d3aeb2470f', //设置高德地图key
+          key: 'b87ba9590d7fa88e6d7fd6d3aeb2470f', //设置高德地图key  从官网获取
           version: '2.0',
           plugins: ['AMap.ToolBar', 'AMap.Scale', 'AMap.Geolocation', 'AMap.PlaceSearch', 'AMap.AutoComplete', 'AMap.Geocoder', 'AMap.CitySearch'],
           AMapUI: {

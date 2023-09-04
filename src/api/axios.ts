@@ -1,14 +1,13 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable prefer-const */
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
-/* eslint-disable no-var */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { loginOut, userAuthGet } from '../utils/security';
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+/* eslint-disable @typescript-eslint/no-empty-function */
+// import { goLogin } from "@/router";
+import { isNull, blobToStr, isObject } from "@/utils";
 import { getBaseUrl, getTimeOut } from "../utils/config";
-import { assemblyGetParams, isNull } from "../utils";
-import type { AxiosResponse } from "axios";
-import axios from "axios";
-import { reidrect } from '../router';
+// import { getAuth } from "@/utils/security";
+import { showMsg } from "@/components/Tip";
+import axios, { AxiosResponse } from "axios";
+
 
 /**
  * axios访问实例
@@ -18,15 +17,15 @@ export const axiosInstance = axios.create({
   timeout: getTimeOut(),
 });
 
+
 /**
  * http请求参数
  */
 export interface IHttpRequestParams {
-  urlPrefix?: string;
   /**
    * 请求地址
    */
-  url: string;
+  url?: string;
   /**
    * 请求数据 如需上传文件，此处应为FormData
    */
@@ -40,6 +39,10 @@ export interface IHttpRequestParams {
    */
   dataType?: "form" | "json";
   /**
+   * 是否将参数格式化为formdata
+   */
+  formatToFormData?: boolean;
+  /**
    * 请求异常回调
    * @param msg
    * @returns
@@ -49,15 +52,19 @@ export interface IHttpRequestParams {
    * 请求完毕回调
    * @returns
    */
-  finally?: () => void;
+  fin?: () => void;
   /**
    * 请求错误是否提示错误信息 默认为提示
    */
   tipError?: boolean;
   /**
-   * 下载文件名
+  * 数据响应类型
+  */
+  responseType?: 'json' | 'blob';
+  /**
+   * 超时时长
    */
-  fileName?: string;
+  timeout?: number;
 }
 
 /**
@@ -74,6 +81,16 @@ const initHttpRequestParams = (params: IHttpRequestParams) => {
   if (isNull(params.tipError)) {
     params.tipError = true;
   }
+  if (params.formatToFormData && !isNull(params.data) && isObject(params.data)) {
+    const formData = new FormData();
+    for (const key in params.data) {
+      if (Object.prototype.hasOwnProperty.call(params.data, key)) {
+        const element = params.data[key];
+        formData.append(key, element);
+      }
+    }
+    params.data = formData;
+  }
 };
 
 /**
@@ -81,19 +98,18 @@ const initHttpRequestParams = (params: IHttpRequestParams) => {
  * @param params
  * @returns
  */
-const initHttpRequestHeader = (params: IHttpRequestParams): any => {
-  var header: any = {};
+const initHttpRequestHeader = async (params: IHttpRequestParams): Promise<any> => {
+  const header: any = {};
 
   if (params.requestType === "post") {
-    header["Content-Type"] =
-      params.dataType === "json"
-        ? "application/json"
-        : "application/x-www-form-urlencoded";
+    header["Content-Type"] = params.dataType === "json" ? "application/json" : "application/x-www-form-urlencoded";
   }
+
   //如果需要添加token 请在这里填写
-  var userInfo = userAuthGet();
-  if (userInfo?.authentication) {
-    header["authentication"] = userInfo.authentication;
+  // var userInfo = getAuth();
+  const userInfo = sessionStorage.getItem('Authentication')
+  if (userInfo) {
+    header["Authentication"] = userInfo;
   }
 
   return header;
@@ -102,20 +118,19 @@ const initHttpRequestHeader = (params: IHttpRequestParams): any => {
 /**
  * 当请求错误时，提示错误
  */
-const tipError = (
-  isTip: boolean,
-  msg: string,
-  callback?: (msg: string) => void
-) => {
-  callback?.(msg);
+const tipError = (isTip: boolean, msg: string, callback?: (msg: string) => void) => {
+  if (!isNull(msg) && msg.indexOf("timeout") != -1) {
+    msg = "请求超时";
+  }
 
+  callback?.(msg);
   if (!isTip) {
     return;
   }
-
   //在这里书写提示错误相关代码，如Modal.Error
-  // ElMessage.error(msg);
+  showMsg('error', msg);
 };
+
 
 /**
  * 通用Http请求
@@ -127,48 +142,63 @@ export const apiRequest = async (params: IHttpRequestParams) => {
     return Promise.reject("请传入请求参数");
   }
 
+  //完善请求参数
   initHttpRequestParams(params);
 
-  var headers = initHttpRequestHeader(params);
-
-  var url = params.url;
-  if (params.urlPrefix) {
-    url = `${params.urlPrefix}${url}`;
-  }
-
   try {
-    var reponse: AxiosResponse<any>;
+
+    //填充头部信息
+    const headers = await initHttpRequestHeader(params);
+
+    let reponse: AxiosResponse<any>;
+
     if (params.requestType === "post") {
-      reponse = await axiosInstance.post(
-        url,
-        params.dataType === "json" ? params.data : params.data,
-        { headers }
-      );
+      reponse = await axiosInstance.post(params.url, params.data, { headers, timeout: params.timeout });
     } else {
-      reponse = await axiosInstance.get(
-        `${url}${assemblyGetParams(params.data)}`,
-        { headers }
-      );
+      reponse = await axiosInstance.get(params.url, { headers, params: params.data, responseType: params.responseType, timeout: params.timeout });
     }
 
-    //登出无响应不处理
-    if (params.url === "/sysUser/logout") {
-      return Promise.resolve();
+    let rspData = reponse?.data;
+
+    if (params.responseType === 'blob') {
+      if (reponse.headers['content-type'] === 'application/json') {
+        //如果响应是json代表请求出错
+        try {
+          const dataStr = await blobToStr(rspData as any);
+          rspData = JSON.parse(dataStr);
+        } catch (error) {
+          rspData = { code: -1, message: '未知的异常' };
+        }
+      } else {
+        //这种情况是真实的文件响应,返回固定的结果
+        let fileName = '';
+        //读取文件名
+        const fileContent: string = reponse.headers["content-disposition"];
+        if (fileContent) {
+          const start = fileContent.indexOf('fileName=');
+          if (start != -1) {
+            const fileNameStr = fileContent.substring(start + 9);
+            fileName = decodeURIComponent(fileNameStr);
+          }
+        }
+        return Promise.resolve({ fileName, fileBlob: rspData });
+      }
     }
 
-    const { code, data, message } = reponse?.data || {};
+    const { code, data, message } = rspData || {};
     if (!code) {
-      // ElMessage.error('服务出错了！！！')
+      params.tipError && showMsg('error', '后台服务异常：无效的响应内容');
       return
     }
-    if (code !== 200) {
+
+    //不等于200是错误
+    if (code !== "200") {
       //登录失效
-      if (code === 582) {
-        tipError(true, "登录失效,请重新登录");
-        loginOut();
-        setTimeout(() => {
-          reidrect("/login")
-        }, 200);
+      if (code === "401") {
+        showMsg('error', '登录已过期, 请重新登录')
+        // await logoutFun(() => { })
+        sessionStorage.removeItem('useremail')
+        sessionStorage.removeItem('Authentication')
         return Promise.reject("登录失效,请重新登录");
       }
 
@@ -178,12 +208,24 @@ export const apiRequest = async (params: IHttpRequestParams) => {
     }
 
     return Promise.resolve(data);
+
   } catch (error) {
-    tipError(params.tipError!, error.message, params.onError);
+    tipError(params.tipError!, error?.message, params.onError);
     return Promise.reject(error);
   } finally {
-    params.finally?.();
+    params.fin?.();
   }
 };
 
 
+/**
+ * 触发responseType是blob的文件下载
+ * @param file 
+ * @param fileName 
+ */
+export const triggerDownload = (rsp) => {
+  const eleLink = document.createElement('a');
+  eleLink.download = rsp.fileName;
+  eleLink.href = URL.createObjectURL(rsp.fileBlob);
+  eleLink.click();
+}

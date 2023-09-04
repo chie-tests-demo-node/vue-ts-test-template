@@ -5,12 +5,15 @@ import ElementPlus from 'element-plus'
 import "element-plus/dist/index.css";
 import "@/assets/reset.css";
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
+// 将自动注册所有组件为全局组件
+import dataV from '@jiaminghi/data-view'
 import vant from 'vant'
 
 const app = createApp(App)
 
 app.use(router)
 app.use(vant)
+app.use(dataV)
 app.use(ElementPlus)
 app.mount('#app')
 

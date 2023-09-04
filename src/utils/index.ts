@@ -70,6 +70,29 @@ export const newGuid = () => {
   return curguid;
 };
 
+
+/**
+ * 用setTimeout实现轮询
+ * @param fn 需要执行的函数
+ * @param count 执行次数
+ * @param millisec 间隔时间 毫秒
+ */
+export const playTimeSet = (fn: () => void, count: number, millisec: number): void => {
+  const interval = () => {
+    if (typeof count === 'undefined' || count-- > 0) {
+      setTimeout(interval, millisec);
+      try {
+        fn();
+      } catch (e) {
+        count = 0;
+        throw e.toString();
+      }
+    }
+  };
+  setTimeout(interval, millisec);
+}
+
+
 /**
  * 对象数组相关操作
  */
@@ -390,6 +413,21 @@ export const base64ToBinary = async (dataurl: any) => {
   }
 };
 
+/**
+ * blobtostr
+ * @param blob 
+ * @returns 
+ */
+export const blobToStr = (blob: Blob): Promise<string> => {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      resolve(e.target.result as string);
+    }
+    reader.readAsText(blob, 'utf-8');
+  });
+}
+
 export const base64ToBinarySync = (dataurl: any) => {
   try {
     var bstr = atob(dataurl),
@@ -618,4 +656,14 @@ export const encryptionEmail = (email: string) => {
   var encryptUsername = username.substring(0, 3) + "****" + username.substring(username.length - 2);
   var encryptEmail = encryptUsername + "@" + domain;
   return encryptEmail;
+}
+
+// a标签下载函数
+export const aDownloadFun = (id: string, name: string) => {
+  const newDown = document.createElement('a')
+  newDown.href = `http://192.168.100.141:8089/downloadZone/download?id=${id}`
+  newDown.style.display = 'none'
+  newDown.download = name //文件名
+  newDown.click()  //触发点击
+  URL.revokeObjectURL(newDown.href)  //释放url
 }
